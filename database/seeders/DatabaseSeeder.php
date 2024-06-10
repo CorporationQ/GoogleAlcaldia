@@ -19,28 +19,35 @@ class DatabaseSeeder extends Seeder
         // \App\Models\User::factory()->create([
         //     'name' => 'Test User',
         //     'email' => 'test@example.com',
-        // ]);       
-        $this->call([RoleSeeder::class]);
+        // ]);
 
-        User::create([
-            'name'=>'Anderson Admin',
-            'email'=>'andy@admin.com',
-            'password'=>Hash::make('123'),
-        ])->assignRole('admin');
+        $this->call(RoleSeeder::class);
 
-        User::create([
-            'name'=>'Cuco Uno',
-            'email'=>'cuco@admin.com',
-            'password'=>Hash::make('123'),
-        ])->assignRole('usuario');
+        // Verificar si el usuario 'Anderson Admin' ya existe antes de crearlo
+        if (!User::where('email', 'andy@admin.com')->exists()) {
+            User::create([
+                'name' => 'Anderson Admin',
+                'email' => 'andy@admin.com',
+                'password' => Hash::make('123'),
+            ])->assignRole('administrator');
+        }
 
-        User::create([
-            'name'=>'Cuco DOs',
-            'email'=>'dos@admin.com',
-            'password'=>Hash::make('123'),
-        ])->assignRole('usuario');
+        // Verificar si el usuario 'Cuco Uno' ya existe antes de crearlo
+        if (!User::where('email', 'cuco@admin.com')->exists()) {
+            User::create([
+                'name' => 'Cuco Uno',
+                'email' => 'cuco@admin.com',
+                'password' => Hash::make('123'),
+            ])->assignRole('regular_user');
+        }
 
-        
-
+        // Verificar si el usuario 'Cuco Dos' ya existe antes de crearlo
+        if (!User::where('email', 'dos@admin.com')->exists()) {
+            User::create([
+                'name' => 'Cuco Dos',
+                'email' => 'dos@admin.com',
+                'password' => Hash::make('123'),
+            ])->assignRole('regular_user');
+        }
     }
 }

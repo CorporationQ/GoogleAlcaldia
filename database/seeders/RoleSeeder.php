@@ -14,42 +14,55 @@ class RoleSeeder extends Seeder
      */
     public function run(): void
     {
-        //El sistema contemplara 2 tipos de Usuarios
-        //El ADMINISTRADOR
-        //El USUARIO NORMAL
-        $admin = Role::create(['name' => 'admin']);
-        $usuario = Role::create(['name' => 'usuario']);
+        // Verificar si el rol ya existe antes de crearlo
+        if (!Role::where('name', 'administrator')->exists()) {
+            $adminRole = Role::create(['name' => 'administrator']);
+        } else {
+            $adminRole = Role::where('name', 'administrator')->first();
+        }
 
-        Permission::create(['name' => 'admin.index'])->syncRoles([$admin,$usuario]) ;
-        Permission::create(['name' => 'usuarios.index'])->syncRoles([$admin]) ;
-        Permission::create(['name' => 'usuarios.create'])->syncRoles([$admin]) ;
-        Permission::create(['name' => 'usuarios.store'])->syncRoles([$admin]) ;
-        Permission::create(['name' => 'usuarios.show'])->syncRoles([$admin]) ;
-        Permission::create(['name' => 'usuarios.edit'])->syncRoles([$admin]) ;
-        Permission::create(['name' => 'usuarios.update'])->syncRoles([$admin]) ;
-        Permission::create(['name' => 'usuarios.destroy'])->syncRoles([$admin]) ;
+        if (!Role::where('name', 'regular_user')->exists()) {
+            $userRole = Role::create(['name' => 'regular_user']);
+        } else {
+            $userRole = Role::where('name', 'regular_user')->first();
+        }
 
+        // Lista de permisos
+        $permissions = [
+            'admin.index',
+            'usuarios.index',
+            'usuarios.create',
+            'usuarios.store',
+            'usuarios.show',
+            'usuarios.edit',
+            'usuarios.update',
+            'usuarios.destroy',
+            'mi_almacenamiento.index',
+            'mi_almacenamiento.store',
+            'mi_almacenamiento.carpeta',
+            'mi_almacenamiento.carpeta.update_subcarpeta',
+            'mi_almacenamiento.carpeta.update_subcarpeta_color',
+            'mi_almacenamiento.carpeta.crear_subcarpeta',
+            'mi_almacenamiento.update',
+            'mi_almacenamiento.update_color',
+            'carpeta.destroy',
+            'mi_almacenamiento.archivo.upload',
+            'mi_almacenamiento.archivo.eliminar_archivo',
+            'mi_almacenamiento.archivo.cambiar.privado.publico',
+            'mi_almacenamiento.archivo.cambiar.publico.privado',
+            'mostrar.archivos.privados'
+        ];
 
-        Permission::create(['name' => 'mi_almacenamiento.index'])->syncRoles([$admin,$usuario]) ;
-        Permission::create(['name' => 'mi_almacenamiento.store'])->syncRoles([$admin,$usuario]) ;
-        Permission::create(['name' => 'mi_almacenamiento.carpeta'])->syncRoles([$admin,$usuario]) ;
-        Permission::create(['name' => 'mi_almacenamiento.carpeta.update_subcarpeta'])->syncRoles([$admin,$usuario]) ;
-        Permission::create(['name' => 'mi_almacenamiento.carpeta.update_subcarpeta_color'])->syncRoles([$admin,$usuario]) ;
-        Permission::create(['name' => 'mi_almacenamiento.carpeta.crear_subcarpeta'])->syncRoles([$admin,$usuario]) ;
-        Permission::create(['name' => 'mi_almacenamiento.update'])->syncRoles([$admin,$usuario]) ;
-        Permission::create(['name' => 'mi_almacenamiento.update_color'])->syncRoles([$admin,$usuario]) ;
-        Permission::create(['name' => 'carpeta.destroy'])->syncRoles([$admin,$usuario]) ;
-
-
-
-        Permission::create(['name' => 'mi_almacenamiento.archivo.upload'])->syncRoles([$admin,$usuario]) ;
-        Permission::create(['name' => 'mi_almacenamiento.archivo.eliminar_archivo'])->syncRoles([$admin,$usuario]) ;
-        Permission::create(['name' => 'mi_almacenamiento.archivo.cambiar.privado.publico'])->syncRoles([$admin,$usuario]) ;
-        Permission::create(['name' => 'mi_almacenamiento.archivo.cambiar.publico.privado'])->syncRoles([$admin,$usuario]) ;
-        Permission::create(['name' => 'mostrar.archivos.privados'])->syncRoles([$admin,$usuario]) ;
-
-
-
-
+        // Crear permisos y asignarlos a roles
+        foreach ($permissions as $permissionName) {
+            if (!Permission::where('name', $permissionName)->exists()) {
+                $permission = Permission::create(['name' => $permissionName]);
+                if (in_array($permissionName, ['admin.index', 'mi_almacenamiento.index', 'mi_almacenamiento.store', 'mi_almacenamiento.carpeta', 'mi_almacenamiento.carpeta.update_subcarpeta', 'mi_almacenamiento.carpeta.update_subcarpeta_color', 'mi_almacenamiento.carpeta.crear_subcarpeta', 'mi_almacenamiento.update', 'mi_almacenamiento.update_color', 'carpeta.destroy', 'mi_almacenamiento.archivo.upload', 'mi_almacenamiento.archivo.eliminar_archivo', 'mi_almacenamiento.archivo.cambiar.privado.publico', 'mi_almacenamiento.archivo.cambiar.publico.privado', 'mostrar.archivos.privados'])) {
+                    $permission->syncRoles([$adminRole, $userRole]);
+                } else {
+                    $permission->syncRoles([$adminRole]);
+                }
+            }
+        }
     }
 }
